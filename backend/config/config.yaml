@@ -1,0 +1,62 @@
+# Trading Bot Configuration for $5 Account
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  debug: true
+
+database:
+  url: "postgresql://user:password@localhost:5432/trading_bot"
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 0
+    password: null
+
+exchanges:
+  binance:
+    enabled: true
+    testnet: true
+    api_key: ""
+    api_secret: ""
+    sandbox: true
+
+trading:
+  initial_balance: 5.0
+  max_positions: 2
+  min_position_size: 0.5
+  max_position_size: 2.0
+  
+  risk:
+    max_portfolio_risk: 40.0
+    max_position_risk: 20.0
+    max_daily_loss: 10.0
+    stop_loss_percent: 5.0
+    take_profit_percent: 10.0
+
+strategies:
+  simple_ma:
+    enabled: true
+    symbols: ["BTC/USDT", "ETH/USDT"]
+    short_period: 5
+    long_period: 10
+    min_volume: 1000000
+  rsi:
+    enabled: false # Set to true to enable RSI strategy
+    symbols: ["BTC/USDT", "ETH/USDT"]
+    rsi_period: 14
+    overbought_threshold: 70
+    oversold_threshold: 30
+    min_volume: 1000000
+
+market_data:
+  symbols: ["BTC/USDT", "ETH/USDT", "BNB/USDT"]
+  update_interval: 30
+  history_days: 7
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/trading_bot.log"
+
+

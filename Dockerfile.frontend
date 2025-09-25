@@ -1,0 +1,16 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY frontend/package.json frontend/package-lock.json ./frontend/
+RUN npm install --prefix frontend
+
+COPY frontend/ ./frontend/
+RUN npm run build --prefix frontend
+
+FROM nginx:alpine
+COPY --from=0 /app/frontend/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+

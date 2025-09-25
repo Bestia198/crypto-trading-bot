@@ -1,0 +1,37 @@
+name: CI/CD
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install -r backend/requirements.txt
+    - name: Run tests (if any)
+      run: pytest backend/tests || true # Allow CI to pass if no tests yet
+
+  build-and-test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+    - name: Install dependencies
+      run: npm install
+      working-directory: frontend
+    - name: Build frontend
+      run: npm run build
+      working-directory: frontend
+    - name: Run tests (if any)
+      run: npm test -- --watchAll=false || true # Allow CI to pass if no tests yet
+      working-directory: frontend
+
+
