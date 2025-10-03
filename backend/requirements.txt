@@ -1,4 +1,4 @@
-aiohttp==3.8.5
+aiohttp==3.12.14
 aioredis==2.0.1
 ccxt==4.0.77
 websockets==11.0.3
