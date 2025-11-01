@@ -17,6 +17,9 @@ export default function Dashboard() {
   const [sessionName, setSessionName] = useState("");
   const [initialFiat, setInitialFiat] = useState(20);
 
+  // Get utils for cache invalidation
+  const utils = trpc.useUtils();
+
   // Mutation to start a new simulation
   const startSimulation = trpc.trading.startSimulation.useMutation({
     onSuccess: (data) => {
@@ -25,7 +28,7 @@ export default function Dashboard() {
       setSessionName("");
       setInitialFiat(20);
       // Refetch sessions
-      trpc.useUtils().trading.getSessions.invalidate();
+      utils.trading.getSessions.invalidate();
     },
   });
 
