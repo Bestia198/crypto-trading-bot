@@ -1,20 +1,5 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "5",
-      "when": 1761994199935,
-      "tag": "0000_aromatic_jetstream",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1761994245744,
-      "tag": "0001_silly_joystick",
-      "breakpoints": true
-    }
-  ]
+  "entries": []
 }

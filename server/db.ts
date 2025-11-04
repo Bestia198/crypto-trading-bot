@@ -1,6 +1,6 @@
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, tradingSessions, agentMetrics, transactions, portfolioSnapshots, userSettings } from "../drizzle/schema";
+import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,86 +89,4 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// Trading-related queries
-
-export async function getTradingSessionsByUserId(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  
-  return await db
-    .select()
-    .from(tradingSessions)
-    .where(eq(tradingSessions.userId, userId))
-    .orderBy(desc(tradingSessions.createdAt));
-}
-
-export async function getAgentMetricsBySessionId(sessionId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  
-  return await db
-    .select()
-    .from(agentMetrics)
-    .where(eq(agentMetrics.sessionId, sessionId))
-    .orderBy(desc(agentMetrics.createdAt));
-}
-
-export async function getTransactionsBySessionId(sessionId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  
-  return await db
-    .select()
-    .from(transactions)
-    .where(eq(transactions.sessionId, sessionId))
-    .orderBy(desc(transactions.timestamp));
-}
-
-export async function getPortfolioSnapshotsBySessionId(sessionId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  
-  return await db
-    .select()
-    .from(portfolioSnapshots)
-    .where(eq(portfolioSnapshots.sessionId, sessionId))
-    .orderBy(desc(portfolioSnapshots.timestamp));
-}
-
-export async function getUserSettings(userId: number) {
-  const db = await getDb();
-  if (!db) return null;
-  
-  const result = await db
-    .select()
-    .from(userSettings)
-    .where(eq(userSettings.userId, userId))
-    .limit(1);
-  
-  return result.length > 0 ? result[0] : null;
-}
-
-export async function upsertUserSettings(userId: number, settings: Partial<typeof userSettings.$inferInsert>) {
-  const db = await getDb();
-  if (!db) return null;
-  
-  const existing = await getUserSettings(userId);
-  
-  if (existing) {
-    await db
-      .update(userSettings)
-      .set(settings)
-      .where(eq(userSettings.userId, userId));
-  } else {
-    await db
-      .insert(userSettings)
-      .values({
-        userId,
-        ...settings,
-      });
-  }
-  
-  return await getUserSettings(userId);
-}
-
-// TODO: add more feature queries here as your schema grows.
+// TODO: add feature queries here as your schema grows.
