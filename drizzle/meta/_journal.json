@@ -36,6 +36,13 @@
       "when": 1762233081146,
       "tag": "0004_normal_dragon_lord",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1762297998542,
+      "tag": "0005_jazzy_christian_walker",
+      "breakpoints": true
     }
   ]
 }

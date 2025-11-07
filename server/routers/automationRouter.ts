@@ -71,3 +71,71 @@ export const automationRouter = router({
       return await getAgentStatusByScheduleId(input.scheduleId);
     }),
 });
+
+
+export const walletRouter = router({
+  getBalance: protectedProcedure.query(async ({ ctx }) => {
+    const { getWalletBalance } = await import("../automationDb");
+    return await getWalletBalance(ctx.user.id);
+  }),
+
+  getTransactions: protectedProcedure
+    .input(z.object({ limit: z.number().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { getWalletTransactions } = await import("../automationDb");
+      return await getWalletTransactions(ctx.user.id, input.limit);
+    }),
+
+  deposit: protectedProcedure
+    .input(z.object({ amount: z.number(), description: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const { createWalletTransaction, updateWalletBalance, getWalletBalance } = await import("../automationDb");
+      
+      await createWalletTransaction({
+        userId: ctx.user.id,
+        transactionType: "deposit",
+        amount: input.amount,
+        description: input.description,
+      });
+
+      const currentBalance = await getWalletBalance(ctx.user.id);
+      const current = currentBalance[0];
+      const newTotal = (current && current.totalBalance ? parseFloat(current.totalBalance.toString()) : 0) + input.amount;
+
+      await updateWalletBalance(ctx.user.id, {
+        totalBalance: newTotal,
+        availableBalance: newTotal,
+      });
+
+      return { success: true };
+    }),
+
+  withdraw: protectedProcedure
+    .input(z.object({ amount: z.number(), description: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const { createWalletTransaction, updateWalletBalance, getWalletBalance } = await import("../automationDb");
+      
+      const currentBalance = await getWalletBalance(ctx.user.id);
+      const current = currentBalance[0];
+      const available = current && current.availableBalance ? parseFloat(current.availableBalance.toString()) : 0;
+
+      if (available < input.amount) {
+        throw new Error("Insufficient balance");
+      }
+
+      await createWalletTransaction({
+        userId: ctx.user.id,
+        transactionType: "withdrawal",
+        amount: input.amount,
+        description: input.description,
+      });
+
+      const newTotal = current && current.totalBalance ? parseFloat(current.totalBalance.toString()) - input.amount : 0;
+      await updateWalletBalance(ctx.user.id, {
+        totalBalance: newTotal,
+        availableBalance: newTotal,
+      });
+
+      return { success: true };
+    }),
+});

@@ -75,3 +75,32 @@ export const agentStatus = mysqlTable("agent_status", {
 
 export type AgentStatus = typeof agentStatus.$inferSelect;
 export type InsertAgentStatus = typeof agentStatus.$inferInsert;
+
+// Wallet Management Tables
+
+export const walletTransactions = mysqlTable("wallet_transactions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  transactionType: mysqlEnum("transaction_type", ["deposit", "withdrawal"]).notNull(),
+  amount: decimal("amount", { precision: 15, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 10 }).default("USDT").notNull(),
+  status: mysqlEnum("status", ["pending", "completed", "failed"]).default("pending").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type WalletTransaction = typeof walletTransactions.$inferSelect;
+export type InsertWalletTransaction = typeof walletTransactions.$inferInsert;
+
+export const walletBalance = mysqlTable("wallet_balance", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  totalBalance: decimal("total_balance", { precision: 15, scale: 2 }).default("0"),
+  availableBalance: decimal("available_balance", { precision: 15, scale: 2 }).default("0"),
+  lockedBalance: decimal("locked_balance", { precision: 15, scale: 2 }).default("0"),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type WalletBalance = typeof walletBalance.$inferSelect;
+export type InsertWalletBalance = typeof walletBalance.$inferInsert;
