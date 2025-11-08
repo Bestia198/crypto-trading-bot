@@ -104,3 +104,66 @@ export const walletBalance = mysqlTable("wallet_balance", {
 
 export type WalletBalance = typeof walletBalance.$inferSelect;
 export type InsertWalletBalance = typeof walletBalance.$inferInsert;
+
+
+// Agent Execution & Trading Results Tables
+
+export const agentExecutions = mysqlTable("agent_executions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  agentId: int("agent_id").notNull(),
+  scheduleId: int("schedule_id"),
+  status: mysqlEnum("status", ["running", "stopped", "paused", "completed", "error"]).default("stopped").notNull(),
+  startTime: timestamp("start_time"),
+  endTime: timestamp("end_time"),
+  totalTrades: int("total_trades").default(0),
+  winningTrades: int("winning_trades").default(0),
+  losingTrades: int("losing_trades").default(0),
+  totalProfit: decimal("total_profit", { precision: 15, scale: 2 }).default("0"),
+  totalLoss: decimal("total_loss", { precision: 15, scale: 2 }).default("0"),
+  winRate: decimal("win_rate", { precision: 5, scale: 2 }).default("0"),
+  confidence: decimal("confidence", { precision: 5, scale: 2 }).default("0"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AgentExecution = typeof agentExecutions.$inferSelect;
+export type InsertAgentExecution = typeof agentExecutions.$inferInsert;
+
+export const tradingResults = mysqlTable("trading_results", {
+  id: int("id").autoincrement().primaryKey(),
+  executionId: int("execution_id").notNull(),
+  userId: int("user_id").notNull(),
+  agentId: int("agent_id").notNull(),
+  symbol: varchar("symbol", { length: 20 }).default("BTC/USDT").notNull(),
+  entryPrice: decimal("entry_price", { precision: 15, scale: 8 }).notNull(),
+  exitPrice: decimal("exit_price", { precision: 15, scale: 8 }),
+  quantity: decimal("quantity", { precision: 15, scale: 8 }).notNull(),
+  profit: decimal("profit", { precision: 15, scale: 2 }).default("0"),
+  profitPercent: decimal("profit_percent", { precision: 8, scale: 4 }).default("0"),
+  tradeType: mysqlEnum("trade_type", ["buy", "sell", "long", "short"]).notNull(),
+  status: mysqlEnum("trade_status", ["open", "closed", "cancelled"]).default("open").notNull(),
+  confidence: decimal("confidence", { precision: 5, scale: 2 }).default("0"),
+  entryTime: timestamp("entry_time").defaultNow().notNull(),
+  exitTime: timestamp("exit_time"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type TradingResult = typeof tradingResults.$inferSelect;
+export type InsertTradingResult = typeof tradingResults.$inferInsert;
+
+export const portfolioAssets = mysqlTable("portfolio_assets", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  symbol: varchar("symbol", { length: 20 }).notNull(),
+  quantity: decimal("quantity", { precision: 15, scale: 8 }).notNull(),
+  averagePrice: decimal("average_price", { precision: 15, scale: 8 }).notNull(),
+  currentPrice: decimal("current_price", { precision: 15, scale: 8 }).notNull(),
+  totalValue: decimal("total_value", { precision: 15, scale: 2 }).notNull(),
+  unrealizedProfit: decimal("unrealized_profit", { precision: 15, scale: 2 }).default("0"),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PortfolioAsset = typeof portfolioAssets.$inferSelect;
+export type InsertPortfolioAsset = typeof portfolioAssets.$inferInsert;

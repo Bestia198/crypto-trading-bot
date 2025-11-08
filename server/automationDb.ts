@@ -183,3 +183,203 @@ export async function updateWalletBalance(userId: number, updates: {
     .set(updateData)
     .where(eq(walletBalance.userId, userId));
 }
+
+
+// Agent Execution Functions
+
+export async function startAgentExecution(execution: {
+  userId: number;
+  agentId: number;
+  scheduleId?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { agentExecutions } = await import("../drizzle/schema");
+  return await db.insert(agentExecutions).values({
+    userId: execution.userId,
+    agentId: execution.agentId,
+    scheduleId: execution.scheduleId,
+    status: "running",
+    startTime: new Date(),
+  });
+}
+
+export async function stopAgentExecution(executionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { agentExecutions } = await import("../drizzle/schema");
+  return await db
+    .update(agentExecutions)
+    .set({ status: "stopped", endTime: new Date() })
+    .where(eq(agentExecutions.id, executionId));
+}
+
+export async function getAgentExecutions(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { agentExecutions } = await import("../drizzle/schema");
+  return await db
+    .select()
+    .from(agentExecutions)
+    .where(eq(agentExecutions.userId, userId));
+}
+
+export async function updateAgentExecutionMetrics(executionId: number, metrics: {
+  totalTrades?: number;
+  winningTrades?: number;
+  losingTrades?: number;
+  totalProfit?: number;
+  totalLoss?: number;
+  winRate?: number;
+  confidence?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { agentExecutions } = await import("../drizzle/schema");
+  const updateData: Record<string, any> = {};
+  
+  if (metrics.totalTrades !== undefined) updateData.totalTrades = metrics.totalTrades;
+  if (metrics.winningTrades !== undefined) updateData.winningTrades = metrics.winningTrades;
+  if (metrics.losingTrades !== undefined) updateData.losingTrades = metrics.losingTrades;
+  if (metrics.totalProfit !== undefined) updateData.totalProfit = metrics.totalProfit.toString();
+  if (metrics.totalLoss !== undefined) updateData.totalLoss = metrics.totalLoss.toString();
+  if (metrics.winRate !== undefined) updateData.winRate = metrics.winRate.toString();
+  if (metrics.confidence !== undefined) updateData.confidence = metrics.confidence.toString();
+  
+  return await db
+    .update(agentExecutions)
+    .set(updateData)
+    .where(eq(agentExecutions.id, executionId));
+}
+
+// Trading Results Functions
+
+export async function createTradingResult(result: {
+  executionId: number;
+  userId: number;
+  agentId: number;
+  symbol: string;
+  entryPrice: number;
+  quantity: number;
+  tradeType: "buy" | "sell" | "long" | "short";
+  confidence: number;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { tradingResults } = await import("../drizzle/schema");
+  return await db.insert(tradingResults).values({
+    executionId: result.executionId,
+    userId: result.userId,
+    agentId: result.agentId,
+    symbol: result.symbol,
+    entryPrice: result.entryPrice.toString(),
+    quantity: result.quantity.toString(),
+    tradeType: result.tradeType,
+    confidence: result.confidence.toString(),
+    notes: result.notes,
+  });
+}
+
+export async function closeTradingResult(resultId: number, exitPrice: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { tradingResults } = await import("../drizzle/schema");
+  
+  const result = await db.select().from(tradingResults).where(eq(tradingResults.id, resultId)).limit(1);
+  if (!result[0]) throw new Error("Trading result not found");
+  
+  const entry = parseFloat(result[0].entryPrice.toString());
+  const qty = parseFloat(result[0].quantity.toString());
+  const profit = (exitPrice - entry) * qty;
+  const profitPercent = ((exitPrice - entry) / entry) * 100;
+  
+  return await db
+    .update(tradingResults)
+    .set({
+      exitPrice: exitPrice.toString(),
+      exitTime: new Date(),
+      status: "closed",
+      profit: profit.toString(),
+      profitPercent: profitPercent.toString(),
+    })
+    .where(eq(tradingResults.id, resultId));
+}
+
+export async function getTradingResults(userId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { tradingResults } = await import("../drizzle/schema");
+  return await db
+    .select()
+    .from(tradingResults)
+    .where(eq(tradingResults.userId, userId))
+    .orderBy((t: any) => t.createdAt)
+    .limit(limit);
+}
+
+export async function getTradingResultsByExecution(executionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { tradingResults } = await import("../drizzle/schema");
+  return await db
+    .select()
+    .from(tradingResults)
+    .where(eq(tradingResults.executionId, executionId));
+}
+
+// Portfolio Functions
+
+export async function getPortfolioAssets(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { portfolioAssets } = await import("../drizzle/schema");
+  return await db
+    .select()
+    .from(portfolioAssets)
+    .where(eq(portfolioAssets.userId, userId));
+}
+
+export async function updatePortfolioAsset(userId: number, asset: {
+  symbol: string;
+  quantity: number;
+  averagePrice: number;
+  currentPrice: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { portfolioAssets } = await import("../drizzle/schema");
+  const totalValue = asset.quantity * asset.currentPrice;
+  const unrealizedProfit = (asset.currentPrice - asset.averagePrice) * asset.quantity;
+  
+  return await db
+    .insert(portfolioAssets)
+    .values({
+      userId,
+      symbol: asset.symbol,
+      quantity: asset.quantity.toString(),
+      averagePrice: asset.averagePrice.toString(),
+      currentPrice: asset.currentPrice.toString(),
+      totalValue: totalValue.toString(),
+      unrealizedProfit: unrealizedProfit.toString(),
+    })
+    .onDuplicateKeyUpdate({
+      set: {
+        quantity: asset.quantity.toString(),
+        averagePrice: asset.averagePrice.toString(),
+        currentPrice: asset.currentPrice.toString(),
+        totalValue: totalValue.toString(),
+        unrealizedProfit: unrealizedProfit.toString(),
+      },
+    });
+}

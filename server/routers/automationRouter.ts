@@ -139,3 +139,39 @@ export const walletRouter = router({
       return { success: true };
     }),
 });
+
+
+export const agentExecutionRouter = router({
+  startExecution: protectedProcedure
+    .input(z.object({ agentId: z.number(), scheduleId: z.number().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const { startAgentExecution } = await import("../automationDb");
+      return await startAgentExecution({
+        userId: ctx.user.id,
+        agentId: input.agentId,
+        scheduleId: input.scheduleId,
+      });
+    }),
+
+  stopExecution: protectedProcedure
+    .input(z.object({ executionId: z.number() }))
+    .mutation(async ({ input }) => {
+      const { stopAgentExecution } = await import("../automationDb");
+      return await stopAgentExecution(input.executionId);
+    }),
+
+  getExecutions: protectedProcedure.query(async ({ ctx }) => {
+    const { getAgentExecutions } = await import("../automationDb");
+    return await getAgentExecutions(ctx.user.id);
+  }),
+
+  getTradingResults: protectedProcedure.query(async ({ ctx }) => {
+    const { getTradingResults } = await import("../automationDb");
+    return await getTradingResults(ctx.user.id);
+  }),
+
+  getPortfolio: protectedProcedure.query(async ({ ctx }) => {
+    const { getPortfolioAssets } = await import("../automationDb");
+    return await getPortfolioAssets(ctx.user.id);
+  }),
+});

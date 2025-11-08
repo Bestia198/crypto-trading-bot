@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Play, Pause, Trash2, Plus, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import { Loader2, Play, Pause, Trash2, Plus, DollarSign, TrendingUp, TrendingDown, Activity, Target, Zap } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -15,6 +15,7 @@ export default function Automation() {
   const { user } = useAuth();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [isWalletDialogOpen, setIsWalletDialogOpen] = useState(false);
+  const [isResultsDialogOpen, setIsResultsDialogOpen] = useState(false);
   const [walletAction, setWalletAction] = useState<"deposit" | "withdrawal">("deposit");
   const [scheduleName, setScheduleName] = useState("");
   const [cronExpression, setCronExpression] = useState("0 0 * * *");
@@ -26,6 +27,9 @@ export default function Automation() {
   const { data: schedules, isLoading: schedulesLoading } = trpc.automation.getAutomationSchedules.useQuery();
   const { data: walletBalance } = trpc.wallet.getBalance.useQuery();
   const { data: walletTransactions } = trpc.wallet.getTransactions.useQuery({ limit: 10 });
+  const { data: executions } = trpc.agentExecution.getExecutions.useQuery();
+  const { data: tradingResults } = trpc.agentExecution.getTradingResults.useQuery();
+  const { data: portfolio } = trpc.agentExecution.getPortfolio.useQuery();
   
   const utils = trpc.useUtils();
 
@@ -49,6 +53,18 @@ export default function Automation() {
   const deleteSchedule = trpc.automation.deleteSchedule.useMutation({
     onSuccess: () => {
       utils.automation.getAutomationSchedules.invalidate();
+    },
+  });
+
+  const startExecution = trpc.agentExecution.startExecution.useMutation({
+    onSuccess: () => {
+      utils.agentExecution.getExecutions.invalidate();
+    },
+  });
+
+  const stopExecution = trpc.agentExecution.stopExecution.useMutation({
+    onSuccess: () => {
+      utils.agentExecution.getExecutions.invalidate();
     },
   });
 
@@ -92,6 +108,16 @@ export default function Automation() {
     }
   };
 
+  // Calculate metrics
+  const totalTrades = tradingResults?.length || 0;
+  const winningTrades = tradingResults?.filter((t: any) => parseFloat(t.profit?.toString() || "0") > 0).length || 0;
+  const losingTrades = totalTrades - winningTrades;
+  const winRate = totalTrades > 0 ? ((winningTrades / totalTrades) * 100).toFixed(2) : "0";
+  const totalProfit = tradingResults?.reduce((sum: number, t: any) => sum + parseFloat(t.profit?.toString() || "0"), 0) || 0;
+  const avgConfidence = executions && executions.length > 0 
+    ? (executions.reduce((sum: number, e: any) => sum + parseFloat(e.confidence?.toString() || "0"), 0) / executions.length).toFixed(2)
+    : "0";
+
   // Sample data for charts
   const roiData = [
     { agent: "RL-1", roi: 12.5 },
@@ -109,11 +135,10 @@ export default function Automation() {
     { name: "DeepSeek", trades: 42, wins: 26, losses: 16 },
   ];
 
-  const portfolioData = [
-    { name: "Stocks", value: 4000 },
-    { name: "Crypto", value: 3000 },
-    { name: "Cash", value: 2000 },
-  ];
+  const portfolioData = portfolio?.map((asset: any) => ({
+    name: asset.symbol,
+    value: parseFloat(asset.totalValue?.toString() || "0"),
+  })) || [];
 
   const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
@@ -129,10 +154,126 @@ export default function Automation() {
           <div>
             <h1 className="text-3xl font-bold">Automation & Autonomous Agents</h1>
             <p className="text-gray-600 mt-1">
-              Configure and manage autonomous trading agents with AI/RL strategies
+              Control autonomous trading agents with real-time performance metrics
             </p>
           </div>
         </div>
+
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                Win Rate
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{winRate}%</div>
+              <p className="text-xs text-gray-500 mt-1">{winningTrades}/{totalTrades} trades</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                Confidence
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{avgConfidence}%</div>
+              <p className="text-xs text-gray-500 mt-1">Avg algorithm confidence</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Total Profit
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className={`text-2xl font-bold ${totalProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
+                ${totalProfit.toFixed(2)}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">From all trades</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                Active Agents
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">
+                {executions?.filter((e: any) => e.status === "running").length || 0}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Currently running</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Agent Control Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Agent Control Panel</CardTitle>
+            <CardDescription>Start and manage autonomous trading agents</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {agents && agents.length > 0 ? (
+                agents.map((agent: any) => {
+                  const execution = executions?.find((e: any) => e.agentId === agent.id);
+                  const isRunning = execution?.status === "running";
+                  
+                  return (
+                    <div
+                      key={agent.id}
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                    >
+                      <div className="flex-1">
+                        <h3 className="font-semibold">{agent.agentName}</h3>
+                        <p className="text-sm text-gray-600">{agent.agentType}</p>
+                        <div className="flex gap-2 mt-2">
+                          <Badge variant={isRunning ? "default" : "outline"}>
+                            {isRunning ? "Running" : "Stopped"}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {isRunning ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => stopExecution.mutate({ executionId: execution.id })}
+                          >
+                            <Pause className="h-4 w-4 mr-2" />
+                            Stop
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={() => startExecution.mutate({ agentId: agent.id })}
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            Start
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-center text-gray-500 py-4">No agents configured</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Wallet Section */}
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -162,7 +303,7 @@ export default function Automation() {
             </div>
 
             <div className="flex gap-3">
-              <Dialog open={isWalletDialogOpen} onOpenChange={setIsWalletDialogOpen}>
+              <Dialog open={isWalletDialogOpen && walletAction === "deposit"} onOpenChange={setIsWalletDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
                     onClick={() => setWalletAction("deposit")}
@@ -175,9 +316,7 @@ export default function Automation() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Deposit Funds</DialogTitle>
-                    <DialogDescription>
-                      Add funds to your trading wallet
-                    </DialogDescription>
+                    <DialogDescription>Add funds to your trading wallet</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
@@ -221,9 +360,7 @@ export default function Automation() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Withdraw Funds</DialogTitle>
-                    <DialogDescription>
-                      Withdraw funds from your trading wallet
-                    </DialogDescription>
+                    <DialogDescription>Withdraw funds from your trading wallet</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
@@ -257,186 +394,129 @@ export default function Automation() {
           </CardContent>
         </Card>
 
-        {/* Agent Control Section */}
+        {/* Trading Results */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Automation Schedules</CardTitle>
-              <CardDescription>Create and manage autonomous trading schedules</CardDescription>
+              <CardTitle>Trading Results</CardTitle>
+              <CardDescription>Recent trades executed by agents</CardDescription>
             </div>
-            <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
+            <Dialog open={isResultsDialogOpen} onOpenChange={setIsResultsDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Schedule
-                </Button>
+                <Button size="sm">View All Results</Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-4xl">
                 <DialogHeader>
-                  <DialogTitle>Create Automation Schedule</DialogTitle>
-                  <DialogDescription>
-                    Set up an autonomous trading schedule with your selected agents
-                  </DialogDescription>
+                  <DialogTitle>Trading Results History</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="scheduleName">Schedule Name</Label>
-                    <Input
-                      id="scheduleName"
-                      placeholder="e.g., Daily BTC Trading"
-                      value={scheduleName}
-                      onChange={(e) => setScheduleName(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="cronExpression">Cron Expression</Label>
-                    <Input
-                      id="cronExpression"
-                      placeholder="0 0 * * * (daily at midnight)"
-                      value={cronExpression}
-                      onChange={(e) => setCronExpression(e.target.value)}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Format: minute hour day month weekday
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="initialCapital">Initial Capital (USDT)</Label>
-                    <Input
-                      id="initialCapital"
-                      type="number"
-                      min="1"
-                      max="100000"
-                      value={initialCapital}
-                      onChange={(e) => setInitialCapital(parseFloat(e.target.value))}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Select Agents</Label>
-                    <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
-                      {agentsLoading ? (
-                        <p className="text-sm text-gray-500">Loading agents...</p>
-                      ) : agents && agents.length > 0 ? (
-                        agents.map((agent: any) => (
-                          <label
-                            key={agent.id}
-                            className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={selectedAgents.includes(agent.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedAgents([...selectedAgents, agent.id]);
-                                } else {
-                                  setSelectedAgents(
-                                    selectedAgents.filter((id) => id !== agent.id)
-                                  );
-                                }
-                              }}
-                              className="rounded"
-                            />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{agent.agentName}</p>
-                              <p className="text-xs text-gray-500">{agent.agentType}</p>
-                            </div>
-                          </label>
+                <div className="overflow-x-auto max-h-96 overflow-y-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="p-2 text-left">Symbol</th>
+                        <th className="p-2 text-left">Type</th>
+                        <th className="p-2 text-right">Entry</th>
+                        <th className="p-2 text-right">Exit</th>
+                        <th className="p-2 text-right">Profit</th>
+                        <th className="p-2 text-right">Confidence</th>
+                        <th className="p-2 text-left">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tradingResults && tradingResults.length > 0 ? (
+                        tradingResults.map((result: any) => (
+                          <tr key={result.id} className="border-b hover:bg-gray-50">
+                            <td className="p-2">{result.symbol}</td>
+                            <td className="p-2 capitalize">{result.tradeType}</td>
+                            <td className="p-2 text-right">${parseFloat(result.entryPrice?.toString() || "0").toFixed(2)}</td>
+                            <td className="p-2 text-right">
+                              {result.exitPrice ? `$${parseFloat(result.exitPrice.toString()).toFixed(2)}` : "-"}
+                            </td>
+                            <td className={`p-2 text-right font-semibold ${parseFloat(result.profit?.toString() || "0") >= 0 ? "text-green-600" : "text-red-600"}`}>
+                              ${parseFloat(result.profit?.toString() || "0").toFixed(2)}
+                            </td>
+                            <td className="p-2 text-right">{parseFloat(result.confidence?.toString() || "0").toFixed(2)}%</td>
+                            <td className="p-2">
+                              <Badge variant={result.status === "closed" ? "default" : "outline"}>
+                                {result.status}
+                              </Badge>
+                            </td>
+                          </tr>
                         ))
                       ) : (
-                        <p className="text-sm text-gray-500">
-                          No agents configured. Create one first.
-                        </p>
+                        <tr>
+                          <td colSpan={7} className="p-4 text-center text-gray-500">
+                            No trading results yet
+                          </td>
+                        </tr>
                       )}
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={handleCreateSchedule}
-                    disabled={
-                      createSchedule.isPending ||
-                      !scheduleName.trim() ||
-                      selectedAgents.length === 0
-                    }
-                    className="w-full"
-                  >
-                    {createSchedule.isPending ? (
-                      <>
-                        <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                        Creating...
-                      </>
-                    ) : (
-                      "Create Schedule"
-                    )}
-                  </Button>
+                    </tbody>
+                  </table>
                 </div>
               </DialogContent>
             </Dialog>
           </CardHeader>
           <CardContent>
-            {schedulesLoading ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="animate-spin" />
-                <span>Loading schedules...</span>
-              </div>
-            ) : schedules && schedules.length > 0 ? (
-              <div className="space-y-4">
-                {schedules.map((schedule: any) => (
-                  <div
-                    key={schedule.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                  >
+            {tradingResults && tradingResults.length > 0 ? (
+              <div className="space-y-3">
+                {tradingResults.slice(0, 5).map((result: any) => (
+                  <div key={result.id} className="flex items-center justify-between p-3 border rounded">
                     <div className="flex-1">
-                      <h3 className="font-semibold">{schedule.scheduleName}</h3>
-                      <p className="text-sm text-gray-600">
-                        Cron: {schedule.cronExpression}
+                      <p className="font-medium">{result.symbol}</p>
+                      <p className="text-xs text-gray-500">
+                        Entry: ${parseFloat(result.entryPrice?.toString() || "0").toFixed(2)}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        Capital: ${schedule.initialCapital}
-                      </p>
-                      <div className="flex gap-2 mt-2">
-                        <Badge variant="outline">
-                          {schedule.isActive ? "Active" : "Inactive"}
-                        </Badge>
-                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          toggleSchedule.mutate({
-                            scheduleId: schedule.id,
-                            isActive: !schedule.isActive,
-                          })
-                        }
-                      >
-                        {schedule.isActive ? (
-                          <Pause className="h-4 w-4" />
-                        ) : (
-                          <Play className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => deleteSchedule.mutate({ scheduleId: schedule.id })}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <div className="text-right">
+                      <p className={`font-bold ${parseFloat(result.profit?.toString() || "0") >= 0 ? "text-green-600" : "text-red-600"}`}>
+                        ${parseFloat(result.profit?.toString() || "0").toFixed(2)}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Confidence: {parseFloat(result.confidence?.toString() || "0").toFixed(2)}%
+                      </p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">No schedules configured yet</p>
-                <Button onClick={() => setIsScheduleDialogOpen(true)}>
-                  Create Your First Schedule
-                </Button>
+              <p className="text-center text-gray-500 py-4">No trading results yet</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Portfolio View */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Portfolio Assets</CardTitle>
+            <CardDescription>Your current asset allocation</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {portfolio && portfolio.length > 0 ? (
+              <div className="space-y-4">
+                {portfolio.map((asset: any) => {
+                  const totalValue = parseFloat(asset.totalValue?.toString() || "0");
+                  const unrealizedProfit = parseFloat(asset.unrealizedProfit?.toString() || "0");
+                  
+                  return (
+                    <div key={asset.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex-1">
+                        <h3 className="font-semibold">{asset.symbol}</h3>
+                        <p className="text-sm text-gray-600">
+                          {parseFloat(asset.quantity?.toString() || "0").toFixed(8)} units @ ${parseFloat(asset.currentPrice?.toString() || "0").toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">${totalValue.toFixed(2)}</p>
+                        <p className={`text-sm ${unrealizedProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
+                          {unrealizedProfit >= 0 ? "+" : ""}{unrealizedProfit.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+            ) : (
+              <p className="text-center text-gray-500 py-4">No assets in portfolio</p>
             )}
           </CardContent>
         </Card>
@@ -484,33 +564,35 @@ export default function Automation() {
           </Card>
 
           {/* Portfolio Allocation */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Portfolio Allocation</CardTitle>
-              <CardDescription>Asset distribution</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={portfolioData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: $${value}`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {portfolioData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          {portfolioData.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Portfolio Allocation</CardTitle>
+                <CardDescription>Asset distribution</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={portfolioData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value }) => `${name}: $${value.toFixed(0)}`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {portfolioData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Recent Transactions */}
           <Card>
@@ -537,42 +619,6 @@ export default function Automation() {
                 ) : (
                   <p className="text-center text-gray-500 py-4">No transactions yet</p>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Active Schedules</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {schedules?.filter((s: any) => s.isActive).length || 0}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Agents</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {agents?.length || 0}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Average ROI</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {(roiData.reduce((sum, a) => sum + a.roi, 0) / roiData.length).toFixed(2)}%
               </div>
             </CardContent>
           </Card>

@@ -43,6 +43,13 @@
       "when": 1762297998542,
       "tag": "0005_jazzy_christian_walker",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1762612332498,
+      "tag": "0006_funny_vampiro",
+      "breakpoints": true
     }
   ]
 }
