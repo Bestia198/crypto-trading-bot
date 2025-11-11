@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Automation from "./pages/Automation";
 import AgentDashboard from "./pages/AgentDashboard";
 import Settings from "./pages/Settings";
+import AutoAgent from "./pages/AutoAgent";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -18,6 +19,7 @@ function Router() {
       <Route path={"/automation"} component={Automation} />
       <Route path={"/agents"} component={AgentDashboard} />
       <Route path={"/settings"} component={Settings} />
+      <Route path={"/auto-agent"} component={AutoAgent} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

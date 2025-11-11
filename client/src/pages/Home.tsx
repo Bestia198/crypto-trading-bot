@@ -218,6 +218,18 @@ export default function Home() {
               </CardContent>
             </Card>
           </Link>
+
+          <Link href="/auto-agent">
+            <Card className="hover:shadow-lg transition cursor-pointer h-full">
+              <CardHeader>
+                <Zap className="h-6 w-6 text-pink-600 mb-2" />
+                <CardTitle className="text-lg">Auto Agent</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">AI-powered agent selection</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Overview Cards */}
