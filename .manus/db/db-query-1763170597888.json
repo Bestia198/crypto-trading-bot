@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as total_trades FROM trading_results;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT COUNT(*) as total_trades FROM trading_results;",
+  "rows": [
+    {
+      "total_trades": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_trades\n0\n",
+  "stderr": "",
+  "execution_time_ms": 2674
+}

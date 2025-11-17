@@ -230,6 +230,18 @@ export default function Home() {
               </CardContent>
             </Card>
           </Link>
+
+          <Link href="/trading-simulation">
+            <Card className="hover:shadow-lg transition cursor-pointer h-full">
+              <CardHeader>
+                <TrendingUp className="h-6 w-6 text-red-600 mb-2" />
+                <CardTitle className="text-lg">Trading Simulation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">Generate and test trading data</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Overview Cards */}
