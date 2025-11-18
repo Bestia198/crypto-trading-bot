@@ -19,7 +19,7 @@ export default function Automation() {
   const [walletAction, setWalletAction] = useState<"deposit" | "withdrawal">("deposit");
   const [scheduleName, setScheduleName] = useState("");
   const [cronExpression, setCronExpression] = useState("0 0 * * *");
-  const [initialCapital, setInitialCapital] = useState(100);
+  const [initialCapital, setInitialCapital] = useState(30);
   const [walletAmount, setWalletAmount] = useState("");
   const [selectedAgents, setSelectedAgents] = useState<number[]>([]);
 
@@ -38,7 +38,7 @@ export default function Automation() {
       setIsScheduleDialogOpen(false);
       setScheduleName("");
       setCronExpression("0 0 * * *");
-      setInitialCapital(100);
+      setInitialCapital(30);
       setSelectedAgents([]);
       utils.automation.getAutomationSchedules.invalidate();
     },

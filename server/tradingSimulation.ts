@@ -29,24 +29,24 @@ export function generateRealisticTrade(
   const priceChange = (Math.random() - 0.5) * volatility;
   const exitPrice = entryPrice * (1 + priceChange / 100);
   
-  // Simulate quantity based on portfolio size
-  const quantity = Math.floor(30 / entryPrice); // 30 USDT portfolio
+  // Simulate quantity based on portfolio size ($30 USDT)
+  const quantity = Math.min(Math.floor(30 / entryPrice), 1); // Small quantities for $30 portfolio
   
-  // Calculate profit
-  const profit = (exitPrice - entryPrice) * quantity;
+  // Calculate profit (scaled down for $30 portfolio)
+  const profit = (exitPrice - entryPrice) * quantity * 0.5; // Reduced profit scale
   
   // Confidence varies by agent type
-  let confidence = 0.5 + Math.random() * 0.3;
+  let confidence = 0.5 + Math.random() * 0.25;
   
   switch (agentType) {
     case "RL":
-      confidence = 0.55 + Math.random() * 0.35; // RL is more confident
+      confidence = 0.60 + Math.random() * 0.30; // RL is more confident
       break;
     case "Momentum":
-      confidence = 0.50 + Math.random() * 0.30;
+      confidence = 0.55 + Math.random() * 0.25;
       break;
     case "MeanReversion":
-      confidence = 0.45 + Math.random() * 0.35;
+      confidence = 0.50 + Math.random() * 0.30;
       break;
     case "DeepSeek":
       confidence = 0.60 + Math.random() * 0.30; // DeepSeek LLM is most confident
@@ -72,12 +72,12 @@ export function generateRealisticTrade(
 export function generateMultipleTrades(
   agentId: number,
   agentType: string,
-  count: number = 5,
-  currentPrice: number = 45000
+  count: number = 3,
+  currentPrice: number = 50 // Realistic price for $30 portfolio
 ): TradeData[] {
   const trades: TradeData[] = [];
   for (let i = 0; i < count; i++) {
-    trades.push(generateRealisticTrade(agentId, agentType, currentPrice + (Math.random() - 0.5) * 1000));
+    trades.push(generateRealisticTrade(agentId, agentType, currentPrice + (Math.random() - 0.5) * 10));
   }
   return trades;
 }
@@ -95,8 +95,8 @@ export async function seedDemoTradingData(userId: number, agentIds: number[], ag
       const agentId = agentIds[i];
       const agentType = agentTypes[i];
       
-      // Generate 5-10 trades per agent
-      const tradeCount = 5 + Math.floor(Math.random() * 6);
+      // Generate 2-4 trades per agent
+      const tradeCount = 2 + Math.floor(Math.random() * 3);
       const trades = generateMultipleTrades(agentId, agentType, tradeCount);
       
       // Insert trades into database
@@ -118,26 +118,26 @@ export async function seedDemoTradingData(userId: number, agentIds: number[], ag
       }
     }
 
-    // Create portfolio assets
+    // Create portfolio assets for $30 total
     const totalProfit = 0; // Will be calculated from trades
     await db.insert(portfolioAssets).values({
       userId,
       symbol: "BTC",
-      quantity: "0.0005",
+      quantity: "0.0003",
       averagePrice: "45000",
       currentPrice: "45500",
-      totalValue: "22.75",
-      unrealizedProfit: "250",
+      totalValue: "13.65",
+      unrealizedProfit: "0.90",
     });
 
     await db.insert(portfolioAssets).values({
       userId,
       symbol: "ETH",
-      quantity: "0.01",
+      quantity: "0.008",
       averagePrice: "2500",
       currentPrice: "2550",
-      totalValue: "25.50",
-      unrealizedProfit: "50",
+      totalValue: "20.40",
+      unrealizedProfit: "0.40",
     });
 
     console.log("Demo trading data seeded successfully");

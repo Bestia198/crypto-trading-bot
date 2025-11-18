@@ -261,8 +261,8 @@ export default function Home() {
               <CardTitle className="text-sm font-medium text-gray-600">Portfolio Value</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">$12,450.50</div>
-              <p className="text-xs text-gray-500 mt-1">+8.5% this month</p>
+              <div className="text-3xl font-bold text-green-600">$30.00</div>
+              <p className="text-xs text-gray-500 mt-1">+2.1% this week</p>
             </CardContent>
           </Card>
 
@@ -287,10 +287,10 @@ export default function Home() {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 border rounded">
                 <div>
-                  <p className="font-medium">RL-Agent-1 executed 5 trades</p>
+                  <p className="font-medium">RL-Agent-1 executed 3 trades</p>
                   <p className="text-sm text-gray-500">2 hours ago</p>
                 </div>
-                <span className="text-green-600 font-semibold">+$245.50</span>
+                <span className="text-green-600 font-semibold">+$0.65</span>
               </div>
               <div className="flex items-center justify-between p-3 border rounded">
                 <div>
@@ -301,10 +301,10 @@ export default function Home() {
               </div>
               <div className="flex items-center justify-between p-3 border rounded">
                 <div>
-                  <p className="font-medium">Deposit received</p>
+                  <p className="font-medium">Initial deposit</p>
                   <p className="text-sm text-gray-500">1 day ago</p>
                 </div>
-                <span className="text-green-600 font-semibold">+$1,000.00</span>
+                <span className="text-green-600 font-semibold">+$30.00</span>
               </div>
             </div>
           </CardContent>
