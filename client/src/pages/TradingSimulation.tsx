@@ -5,41 +5,29 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Play, RefreshCw, TrendingUp } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
+import { toast } from "sonner";
 
 export default function TradingSimulation() {
   const { user } = useAuth();
   const [isSimulating, setIsSimulating] = useState(false);
 
   // tRPC queries and mutations
-  const seedDemoMutation = trpc.trading.seedDemoData.useMutation();
-  const executeTradeMutation = trpc.trading.executeTrade.useMutation();
+  const generateTradesMutation = trpc.autoTrade.generateTradesForAllAgents.useMutation();
   const tradingResultsQuery = trpc.trading.getTradingResults.useQuery();
   const tradingStatsQuery = trpc.trading.getTradingStats.useQuery();
   const agentConfigsQuery = trpc.automation.getAgentConfigs.useQuery();
 
-  const handleSeedDemoData = async () => {
+  const handleGenerateTrades = async () => {
     setIsSimulating(true);
     try {
-      await seedDemoMutation.mutateAsync();
+      const result = await generateTradesMutation.mutateAsync();
+      toast.success(`Generated ${result.tradesGenerated} trades with ${result.profitGenerated > 0 ? "+" : ""}${result.profitGenerated.toFixed(2)} USDT profit`);
       // Refresh data
       await tradingResultsQuery.refetch();
       await tradingStatsQuery.refetch();
     } catch (error) {
-      console.error("Error seeding demo data:", error);
-    } finally {
-      setIsSimulating(false);
-    }
-  };
-
-  const handleExecuteTrade = async (agentId: number) => {
-    setIsSimulating(true);
-    try {
-      await executeTradeMutation.mutateAsync({ agentId });
-      // Refresh data
-      await tradingResultsQuery.refetch();
-      await tradingStatsQuery.refetch();
-    } catch (error) {
-      console.error("Error executing trade:", error);
+      console.error("Error generating trades:", error);
+      toast.error("Failed to generate trades");
     } finally {
       setIsSimulating(false);
     }
@@ -61,16 +49,16 @@ export default function TradingSimulation() {
         {/* Action Buttons */}
         <div className="flex gap-4">
           <Button
-            onClick={handleSeedDemoData}
+            onClick={handleGenerateTrades}
             disabled={isSimulating}
             className="gap-2"
           >
             {isSimulating ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <RefreshCw className="h-4 w-4" />
+              <Play className="h-4 w-4" />
             )}
-            Seed Demo Data
+            Generate Trades for All Agents
           </Button>
         </div>
 
@@ -102,8 +90,8 @@ export default function TradingSimulation() {
                 <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className={`text-2xl font-bold ${stats.totalProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
-                  ${stats.totalProfit.toFixed(2)}
+                <div className={`text-2xl font-bold ${stats.totalProfit > 0 ? "text-green-600" : "text-red-600"}`}>
+                  {stats.totalProfit > 0 ? "+" : ""}{stats.totalProfit.toFixed(2)} USDT
                 </div>
                 <p className="text-xs text-muted-foreground">Net profit/loss</p>
               </CardContent>
@@ -111,67 +99,45 @@ export default function TradingSimulation() {
           </div>
         )}
 
-        {/* Agent Trading Buttons */}
-        {agents.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Execute Trades by Agent</CardTitle>
-              <CardDescription>Run individual trades for each agent</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {agents.map((agent) => (
-                  <Button
-                    key={agent.id}
-                    onClick={() => handleExecuteTrade(agent.id)}
-                    disabled={isSimulating}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    {isSimulating ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
-                    Trade: {agent.agentName}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Trading Results Table */}
         {results.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Recent Trading Results</CardTitle>
-              <CardDescription>Latest {Math.min(10, results.length)} trades</CardDescription>
+              <CardTitle>Trading Results</CardTitle>
+              <CardDescription>All executed trades</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-2 px-4">Symbol</th>
-                      <th className="text-left py-2 px-4">Entry Price</th>
-                      <th className="text-left py-2 px-4">Exit Price</th>
-                      <th className="text-left py-2 px-4">Quantity</th>
-                      <th className="text-left py-2 px-4">Profit</th>
-                      <th className="text-left py-2 px-4">Confidence</th>
+                      <th className="text-left py-2 px-2">Agent</th>
+                      <th className="text-left py-2 px-2">Symbol</th>
+                      <th className="text-left py-2 px-2">Type</th>
+                      <th className="text-right py-2 px-2">Entry Price</th>
+                      <th className="text-right py-2 px-2">Exit Price</th>
+                      <th className="text-right py-2 px-2">Quantity</th>
+                      <th className="text-right py-2 px-2">Profit</th>
+                      <th className="text-right py-2 px-2">Confidence</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {results.slice(0, 10).map((result) => (
-                      <tr key={result.id} className="border-b hover:bg-muted/50">
-                        <td className="py-2 px-4">{result.symbol}</td>
-                        <td className="py-2 px-4">${parseFloat(result.entryPrice.toString()).toFixed(2)}</td>
-                        <td className="py-2 px-4">${parseFloat((result.exitPrice || 0).toString()).toFixed(2)}</td>
-                        <td className="py-2 px-4">{parseFloat(result.quantity.toString()).toFixed(4)}</td>
-                        <td className={`py-2 px-4 font-semibold ${parseFloat((result.profit || 0).toString()) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                          ${parseFloat((result.profit || 0).toString()).toFixed(2)}
+                    {results.map((trade) => (
+                      <tr key={trade.id} className="border-b hover:bg-muted/50">
+                        <td className="py-2 px-2">{trade.agentId}</td>
+                        <td className="py-2 px-2">{trade.symbol}</td>
+                        <td className="py-2 px-2">
+                          <span className={`px-2 py-1 rounded text-xs ${trade.tradeType === "buy" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                            {trade.tradeType.toUpperCase()}
+                          </span>
                         </td>
-                        <td className="py-2 px-4">{((parseFloat((result.confidence || 0).toString())) * 100).toFixed(0)}%</td>
+                        <td className="text-right py-2 px-2">${parseFloat(trade.entryPrice?.toString() || "0").toFixed(2)}</td>
+                        <td className="text-right py-2 px-2">${parseFloat(trade.exitPrice?.toString() || "0").toFixed(2)}</td>
+                        <td className="text-right py-2 px-2">{parseFloat(trade.quantity?.toString() || "0").toFixed(4)}</td>
+                        <td className={`text-right py-2 px-2 font-semibold ${parseFloat(trade.profit?.toString() || "0") > 0 ? "text-green-600" : "text-red-600"}`}>
+                          {parseFloat(trade.profit?.toString() || "0") > 0 ? "+" : ""}{parseFloat(trade.profit?.toString() || "0").toFixed(2)}
+                        </td>
+                        <td className="text-right py-2 px-2">{(parseFloat(trade.confidence?.toString() || "0") * 100).toFixed(0)}%</td>
                       </tr>
                     ))}
                   </tbody>
@@ -182,18 +148,11 @@ export default function TradingSimulation() {
         )}
 
         {/* Empty State */}
-        {results.length === 0 && !tradingResultsQuery.isLoading && (
+        {results.length === 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                No Trading Data Yet
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Click "Seed Demo Data" to generate sample trading data and see how agents perform.
-              </p>
+            <CardContent className="pt-6 text-center">
+              <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">No trades generated yet. Click the button above to generate demo trades.</p>
             </CardContent>
           </Card>
         )}

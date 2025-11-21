@@ -1,0 +1,25 @@
+{
+  "query": "SELECT COUNT(*) as agent_count FROM agent_configs; SELECT COUNT(*) as trade_count FROM trading_results; SELECT COUNT(*) as wallet_count FROM wallet_balance;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT COUNT(*) as agent_count FROM agent_configs; SELECT COUNT(*) as trade_count FROM trading_results; SELECT COUNT(*) as wallet_count FROM wallet_balance;",
+  "rows": [
+    {
+      "agent_count": "8"
+    },
+    {
+      "agent_count": "trade_count"
+    },
+    {
+      "agent_count": "0"
+    },
+    {
+      "agent_count": "wallet_count"
+    },
+    {
+      "agent_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "agent_count\n8\ntrade_count\n0\nwallet_count\n0\n",
+  "stderr": "",
+  "execution_time_ms": 1499
+}
