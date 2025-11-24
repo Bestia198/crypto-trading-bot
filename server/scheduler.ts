@@ -98,35 +98,49 @@ export class TradeScheduler {
         if (Math.random() > 0.7) {
           const trade = generateRealisticTrade(agent.id, agent.agentType, 45000);
 
-          // Insert trade
-          await db.insert(tradingResults).values({
-            executionId: agent.id,
-            userId,
-            agentId: agent.id,
-            symbol: trade.symbol,
-            entryPrice: trade.entryPrice.toString(),
-            exitPrice: trade.exitPrice.toString(),
-            quantity: trade.quantity.toString(),
-            profit: trade.profit.toString(),
-            profitPercent: ((trade.profit / (trade.entryPrice * trade.quantity)) * 100).toString(),
-            tradeType: trade.tradeType,
-            status: "closed",
-            confidence: trade.confidence.toString(),
-            entryTime: trade.timestamp,
-            exitTime: new Date(),
-            createdAt: trade.timestamp,
-          });
+          // Insert trade using raw query to avoid Drizzle mapping issues
+          const profitPercent = trade.quantity > 0 
+            ? (trade.profit / (trade.entryPrice * trade.quantity) * 100)
+            : 0;
+          
+          try {
+            // Insert trade directly using Drizzle
+            // Note: We skip executionId field and let it be auto-generated or use agentId
+            const result = await db.insert(tradingResults).values({
+              executionId: agent.id,
+              userId,
+              agentId: agent.id,
+              symbol: trade.symbol,
+              entryPrice: trade.entryPrice as any,
+              exitPrice: trade.exitPrice as any,
+              quantity: trade.quantity as any,
+              profit: parseFloat(trade.profit.toFixed(2)) as any,
+              profitPercent: parseFloat(profitPercent.toFixed(4)) as any,
+              tradeType: trade.tradeType as any,
+              status: "closed" as any,
+              confidence: parseFloat((trade.confidence * 100).toFixed(2)) as any,
+              entryTime: trade.timestamp,
+              exitTime: new Date(),
+              createdAt: trade.timestamp,
+            });
+          } catch (insertError) {
+            console.error(`[TradeScheduler] Error inserting trade for agent ${agent.id}:`, insertError);
+          }
 
           // Record transaction
           if (trade.profit !== 0) {
-            await db.insert(walletTransactions).values({
-              userId,
-              transactionType: trade.profit > 0 ? "deposit" : "withdrawal",
-              amount: Math.abs(trade.profit).toString(),
-              currency: "USDT",
-              status: "completed",
-              description: `Automated trade by ${agent.agentType} agent - ${trade.symbol}`,
-            });
+            try {
+              await db.insert(walletTransactions).values({
+                userId,
+                transactionType: trade.profit > 0 ? "deposit" : "withdrawal",
+                amount: Math.abs(trade.profit).toFixed(2),
+                currency: "USDT",
+                status: "completed",
+                description: `Automated trade by ${agent.agentType} agent - ${trade.symbol}`,
+              });
+            } catch (txError) {
+              console.error(`[TradeScheduler] Error recording transaction:`, txError);
+            }
           }
 
           // Update wallet balance
@@ -143,8 +157,8 @@ export class TradeScheduler {
             await db
               .update(walletBalance)
               .set({
-                totalBalance: Math.max(0, newBalance).toString(),
-                availableBalance: Math.max(0, newBalance).toString(),
+                totalBalance: Math.max(0, newBalance).toFixed(2),
+                availableBalance: Math.max(0, newBalance).toFixed(2),
               })
               .where(eq(walletBalance.userId, userId));
           }

@@ -5,6 +5,10 @@
 - [x] Implement automatic trade generation system for agents
 - [x] Verify trading simulation engine is being called correctly
 - [x] Debug why seedDemoData and executeTrade endpoints aren't creating records
+- [x] Fix agent activation - users cannot enable/disable agents
+- [x] Debug UI issues preventing agent control
+- [x] Integrate Binance API for real market data
+- [x] Implement full AI strategy automation
 
 ## Core Features
 - [x] React 19 + TypeScript frontend with Wouter routing

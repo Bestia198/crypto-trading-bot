@@ -1,0 +1,146 @@
+{
+  "query": "DESCRIBE trading_results;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute DESCRIBE trading_results;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "execution_id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "user_id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "agent_id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "symbol",
+      "Type": "varchar(20)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "BTC/USDT",
+      "Extra": ""
+    },
+    {
+      "Field": "entry_price",
+      "Type": "decimal(15,8)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "exit_price",
+      "Type": "decimal(15,8)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "quantity",
+      "Type": "decimal(15,8)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "profit",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "profit_percent",
+      "Type": "decimal(8,4)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "trade_type",
+      "Type": "enum('buy','sell','long','short')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "trade_status",
+      "Type": "enum('open','closed','cancelled')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "open",
+      "Extra": ""
+    },
+    {
+      "Field": "confidence",
+      "Type": "decimal(5,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "entry_time",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "exit_time",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "notes",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "created_at",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nexecution_id\tint(11)\tNO\t\tNULL\t\nuser_id\tint(11)\tNO\t\tNULL\t\nagent_id\tint(11)\tNO\t\tNULL\t\nsymbol\tvarchar(20)\tNO\t\tBTC/USDT\t\nentry_price\tdecimal(15,8)\tNO\t\tNULL\t\nexit_price\tdecimal(15,8)\tYES\t\tNULL\t\nquantity\tdecimal(15,8)\tNO\t\tNULL\t\nprofit\tdecimal(15,2)\tYES\t\t0\t\nprofit_percent\tdecimal(8,4)\tYES\t\t0\t\ntrade_type\tenum('buy','sell','long','short')\tNO\t\tNULL\t\ntrade_status\tenum('open','closed','cancelled')\tNO\t\topen\t\nconfidence\tdecimal(5,2)\tYES\t\t0\t\nentry_time\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nexit_time\ttimestamp\tYES\t\tNULL\t\nnotes\ttext\tYES\t\tNULL\t\ncreated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\n",
+  "stderr": "",
+  "execution_time_ms": 423
+}
