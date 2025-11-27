@@ -1,0 +1,15 @@
+{
+  "query": "SELECT DISTINCT ac.user_id, COUNT(ac.id) as agent_count, (SELECT COUNT(*) FROM wallet_balance wb WHERE wb.user_id = ac.user_id) as wallet_count FROM agent_configs ac GROUP BY ac.user_id HAVING wallet_count = 0 LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT DISTINCT ac.user_id, COUNT(ac.id) as agent_count, (SELECT COUNT(*) FROM wallet_balance wb WHERE wb.user_id = ac.user_id) as wallet_count FROM agent_configs ac GROUP BY ac.user_id HAVING wallet_count = 0 LIMIT 10;",
+  "rows": [
+    {
+      "user_id": "1",
+      "agent_count": "4",
+      "wallet_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "user_id\tagent_count\twallet_count\n1\t4\t0\n",
+  "stderr": "",
+  "execution_time_ms": 390
+}
