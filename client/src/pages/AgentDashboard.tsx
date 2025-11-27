@@ -265,7 +265,7 @@ export default function AgentDashboard() {
               <div className="space-y-4">
                 {agents.map((agent: any) => {
                   const execution = executions?.find((e: any) => e.agentId === agent.id);
-                  const isRunning = execution?.status === "running";
+                  const isRunning = agent.isEnabled || execution?.status === "running";
                   
                   return (
                     <div
@@ -285,13 +285,13 @@ export default function AgentDashboard() {
                           <Badge className={riskLevelColors[agent.riskLevel as keyof typeof riskLevelColors] || "bg-gray-100"}>
                             {agent.riskLevel?.charAt(0).toUpperCase() + agent.riskLevel?.slice(1)} Risk
                           </Badge>
-                          <Badge variant={isRunning ? "default" : "secondary"}>
-                            {isRunning ? "🟢 Running" : "⚫ Stopped"}
+                          <Badge variant={agent.isEnabled ? "default" : "secondary"}>
+                            {agent.isEnabled ? "🟢 Running" : "⚫ Stopped"}
                           </Badge>
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        {isRunning ? (
+                        {isRunning && execution ? (
                           <Button
                             size="sm"
                             variant="outline"
