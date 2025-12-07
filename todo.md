@@ -67,3 +67,26 @@
 - [x] Test agent activation flow end-to-end
 - [x] Fix all identified issues
 - [x] Create validation tests for activation (7 tests passing)
+
+
+## NEW ISSUES - Button & Autonomous Agent - COMPLETE ✅
+- [x] Fix Start/Stop buttons not working in UI
+- [x] Debug button click handlers
+- [x] Integrate DeepSeek/Qwen LLM for autonomous agent
+- [x] Implement automatic strategy selection based on market conditions
+- [x] Add on/off toggle for autonomous agent
+- [x] Test autonomous agent functionality
+- [x] Create AutonomousAgentSelector page component
+- [x] Create autonomousAgent service with LLM integration
+- [x] Create autonomousAgentRouter for tRPC
+- [x] Add 13 comprehensive autonomous agent tests
+
+
+## CRITICAL BUGS - Trade Generation Issues - FIXED ✅
+- [x] All trades are SELL type - should be MIX of BUY/SELL
+- [x] Quantity = 0.0000 - should be real trade sizes
+- [x] Profit = 0.00 - should show realistic gains/losses
+- [x] Win Rate = 0.0% - should calculate real win percentage
+- [x] Fix trade type randomization (now 50% BUY, 50% SELL)
+- [x] Fix quantity calculation based on wallet balance ($15 per trade)
+- [x] Fix profit/loss calculation based on entry/exit prices

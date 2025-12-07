@@ -7,6 +7,7 @@ import { agentSelectionRouter } from "./routers/agentSelectionRouter";
 import { tradingRouter } from "./routers/tradingRouter";
 import { autoTradeRouter } from "./routers/autoTradeRouter";
 import { marketRouter } from "./routers/marketRouter";
+import { autonomousAgentRouter } from "./routers/autonomousAgentRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -28,6 +29,7 @@ export const appRouter = router({
   trading: tradingRouter,
   autoTrade: autoTradeRouter,
   market: marketRouter,
+  autonomousAgent: autonomousAgentRouter,
 });
 
 export type AppRouter = typeof appRouter;

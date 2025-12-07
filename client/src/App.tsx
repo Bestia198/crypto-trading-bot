@@ -10,6 +10,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import Settings from "./pages/Settings";
 import AutoAgent from "./pages/AutoAgent";
 import TradingSimulation from "./pages/TradingSimulation";
+import AutonomousAgentSelector from "./pages/AutonomousAgentSelector";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -21,6 +22,7 @@ function Router() {
       <Route path={"/agents"} component={AgentDashboard} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/auto-agent"} component={AutoAgent} />
+      <Route path={"/autonomous-agent"} component={AutonomousAgentSelector} />
       <Route path={"/trading-simulation"} component={TradingSimulation} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

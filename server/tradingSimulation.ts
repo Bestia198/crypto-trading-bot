@@ -20,7 +20,7 @@ export function generateRealisticTrade(
   agentId: number,
   agentType: string,
   currentPrice: number,
-  volatility: number = 2
+  volatility: number = 2.5
 ): TradeData {
   // Simulate entry price based on agent type
   const entryPrice = currentPrice * (0.98 + Math.random() * 0.04);
@@ -30,10 +30,12 @@ export function generateRealisticTrade(
   const exitPrice = entryPrice * (1 + priceChange / 100);
   
   // Simulate quantity based on portfolio size ($30 USDT)
-  const quantity = Math.min(Math.floor(30 / entryPrice), 1); // Small quantities for $30 portfolio
+  // Use 50% of portfolio for this trade
+  const tradeAmount = 15; // Use $15 per trade
+  const quantity = Math.max(0.0001, tradeAmount / entryPrice); // Realistic quantity
   
-  // Calculate profit (scaled down for $30 portfolio)
-  const profit = (exitPrice - entryPrice) * quantity * 0.5; // Reduced profit scale
+  // Calculate profit/loss
+  const profit = (exitPrice - entryPrice) * quantity;
   
   // Confidence varies by agent type
   let confidence = 0.5 + Math.random() * 0.25;
@@ -53,13 +55,16 @@ export function generateRealisticTrade(
       break;
   }
   
+  // Determine trade type randomly (50% buy, 50% sell)
+  const tradeType: "buy" | "sell" = Math.random() > 0.5 ? "buy" : "sell";
+  
   return {
     agentId,
     symbol: "BTC/USDT",
     entryPrice,
     exitPrice,
     quantity,
-    tradeType: profit > 0 ? "buy" : "sell",
+    tradeType,
     profit,
     confidence: Math.min(1, confidence),
     timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000), // Random time in last 24h
