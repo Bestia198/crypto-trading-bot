@@ -154,10 +154,10 @@ export const agentExecutionRouter = router({
     }),
 
   stopExecution: protectedProcedure
-    .input(z.object({ executionId: z.number() }))
+    .input(z.object({ agentId: z.number() }))
     .mutation(async ({ input }) => {
       const { stopAgentExecution } = await import("../automationDb");
-      return await stopAgentExecution(input.executionId);
+      return await stopAgentExecution(input.agentId);
     }),
 
   getExecutions: protectedProcedure.query(async ({ ctx }) => {

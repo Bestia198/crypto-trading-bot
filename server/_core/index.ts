@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { tradeScheduler } from "../scheduler";
+import { autoTradingEngine } from "../autoTradingEngine";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -67,6 +68,9 @@ async function startServer() {
     
     // Start trade scheduler (5 minute interval)
     tradeScheduler.start(5 * 60 * 1000);
+    
+    // Start autonomous AI trading engine (2 minute interval)
+    autoTradingEngine.start(2 * 60 * 1000);
   });
 }
 

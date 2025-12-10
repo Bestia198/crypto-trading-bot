@@ -250,7 +250,7 @@ export default function Automation() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => stopExecution.mutate({ executionId: execution.id })}
+                            onClick={() => stopExecution.mutate({ agentId: agent.id })}
                           >
                             <Pause className="h-4 w-4 mr-2" />
                             Stop
