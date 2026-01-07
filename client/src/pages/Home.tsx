@@ -1,9 +1,11 @@
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Link } from "wouter";
 import { Loader2, TrendingUp, Zap, BarChart3, Settings, Users, Wallet, Shield, Rocket, ArrowRight } from "lucide-react";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 
 export default function Home() {
   const { user, loading, isAuthenticated, logout } = useAuth();
@@ -98,44 +100,42 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Manage deposits, withdrawals, and track your complete trading portfolio with detailed history.
+                  Manage multiple agents with shared or separate portfolios. Track allocation and rebalance easily.
                 </p>
               </CardContent>
             </Card>
 
             <Card className="hover:shadow-lg transition">
               <CardHeader>
-                <Rocket className="h-8 w-8 text-red-600 mb-2" />
-                <CardTitle>Automated Trading</CardTitle>
+                <TrendingUp className="h-8 w-8 text-red-600 mb-2" />
+                <CardTitle>Market Signals</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Set up cron-based trading schedules and let your agents trade autonomously 24/7.
+                  AI-generated trading signals based on technical analysis, market trends, and sentiment analysis.
                 </p>
               </CardContent>
             </Card>
 
             <Card className="hover:shadow-lg transition">
               <CardHeader>
-                <TrendingUp className="h-8 w-8 text-indigo-600 mb-2" />
-                <CardTitle>Performance Tracking</CardTitle>
+                <Rocket className="h-8 w-8 text-indigo-600 mb-2" />
+                <CardTitle>24/7 Automation</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Track detailed trading results with entry/exit prices, profit/loss, and confidence metrics.
+                  Your agents trade around the clock. No manual intervention needed. Set and forget.
                 </p>
               </CardContent>
             </Card>
           </div>
 
           {/* CTA Section */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 text-white text-center mb-20">
-            <h2 className="text-3xl font-bold mb-4">Ready to Start Trading?</h2>
-            <p className="text-lg mb-8 opacity-90">
-              Join thousands of traders using AI-powered agents to maximize returns.
-            </p>
+          <div className="text-center space-y-4 py-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg text-white">
+            <h2 className="text-3xl font-bold">Ready to automate your trading?</h2>
+            <p className="text-lg opacity-90">Start with $30 USD and deploy your first trading agent today.</p>
             <Button size="lg" variant="secondary" onClick={() => window.location.href = getLoginUrl()}>
-              Sign Up Now
+              Launch Dashboard
             </Button>
           </div>
         </div>
@@ -143,11 +143,10 @@ export default function Home() {
     );
   }
 
-  // Authenticated view
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img src={APP_LOGO} alt={APP_TITLE} className="h-8 w-8" />
@@ -245,71 +244,126 @@ export default function Home() {
         </div>
 
         {/* Overview Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Active Agents</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">5</div>
-              <p className="text-xs text-gray-500 mt-1">Running 24/7</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Portfolio Value</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">$30.00</div>
-              <p className="text-xs text-gray-500 mt-1">+2.1% this week</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Win Rate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">68.5%</div>
-              <p className="text-xs text-gray-500 mt-1">Average across agents</p>
-            </CardContent>
-          </Card>
-        </div>
+        <DashboardMetrics />
 
         {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Your latest trading activity</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 border rounded">
-                <div>
-                  <p className="font-medium">RL-Agent-1 executed 3 trades</p>
-                  <p className="text-sm text-gray-500">2 hours ago</p>
-                </div>
-                <span className="text-green-600 font-semibold">+$0.65</span>
-              </div>
-              <div className="flex items-center justify-between p-3 border rounded">
-                <div>
-                  <p className="font-medium">Momentum-Agent started</p>
-                  <p className="text-sm text-gray-500">4 hours ago</p>
-                </div>
-                <span className="text-blue-600">🟢 Running</span>
-              </div>
-              <div className="flex items-center justify-between p-3 border rounded">
-                <div>
-                  <p className="font-medium">Initial deposit</p>
-                  <p className="text-sm text-gray-500">1 day ago</p>
-                </div>
-                <span className="text-green-600 font-semibold">+$30.00</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <RecentActivitySection />
       </div>
     </div>
+  );
+}
+
+function DashboardMetrics() {
+  const { data: metrics, isLoading } = trpc.dashboard.getMetrics.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="grid md:grid-cols-3 gap-6 mb-8">
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardHeader className="pb-2">
+              <div className="h-4 bg-gray-200 rounded w-24"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-8 bg-gray-200 rounded w-16 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-32"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">Active Agents</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-gray-900">{metrics?.activeAgents || 0}</div>
+          <p className="text-xs text-gray-500 mt-1">Running 24/7</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">Portfolio Value</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-green-600">${(metrics?.portfolioValue || 0).toFixed(2)}</div>
+          <p className="text-xs text-gray-500 mt-1">Total balance</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">Win Rate</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-blue-600">{(metrics?.winRate || 0).toFixed(1)}%</div>
+          <p className="text-xs text-gray-500 mt-1">Average across agents</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function RecentActivitySection() {
+  const { data: activities, isLoading } = trpc.dashboard.getRecentActivity.useQuery();
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-12 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!activities || activities.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+          <CardDescription>No trading activity yet</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-500">Start your agents to see trading activity here</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Recent Activity</CardTitle>
+        <CardDescription>Your latest trading activity</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {activities.map((activity) => (
+            <div key={activity.id} className="flex items-center justify-between p-3 border rounded">
+              <div>
+                <p className="font-medium">{activity.type} {activity.symbol}</p>
+                <p className="text-sm text-gray-500">{new Date(activity.executedAt).toLocaleString()}</p>
+              </div>
+              <span className={`font-semibold ${(activity.profit || 0) > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {(activity.profit || 0) > 0 ? '+' : ''} ${(activity.profit || 0).toFixed(2)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

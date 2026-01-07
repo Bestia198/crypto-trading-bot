@@ -1,0 +1,14 @@
+{
+  "query": "SELECT COUNT(*) as enabled_count, COUNT(CASE WHEN is_enabled = 1 THEN 1 END) as active_count FROM agent_configs;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT COUNT(*) as enabled_count, COUNT(CASE WHEN is_enabled = 1 THEN 1 END) as active_count FROM agent_configs;",
+  "rows": [
+    {
+      "enabled_count": "9",
+      "active_count": "7"
+    }
+  ],
+  "messages": [],
+  "stdout": "enabled_count\tactive_count\n9\t7\n",
+  "stderr": "",
+  "execution_time_ms": 594
+}

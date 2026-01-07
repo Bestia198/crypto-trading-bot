@@ -1,0 +1,14 @@
+{
+  "query": "SELECT COUNT(*) as total_trades, SUM(CAST(profit AS DECIMAL(10,2))) as total_profit FROM trading_results;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT COUNT(*) as total_trades, SUM(CAST(profit AS DECIMAL(10,2))) as total_profit FROM trading_results;",
+  "rows": [
+    {
+      "total_trades": "2847",
+      "total_profit": "-5.42"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_trades\ttotal_profit\n2847\t-5.42\n",
+  "stderr": "",
+  "execution_time_ms": 403
+}
