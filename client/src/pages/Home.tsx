@@ -6,6 +6,9 @@ import { Link } from "wouter";
 import { Loader2, TrendingUp, Zap, BarChart3, Settings, Users, Wallet, Shield, Rocket, ArrowRight } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
+import { AgentControlPanel } from "@/components/AgentControlPanel";
+import { LiveMetricsPanel } from "@/components/LiveMetricsPanel";
+import { TradeExecutionLog } from "@/components/TradeExecutionLog";
 
 export default function Home() {
   const { user, loading, isAuthenticated, logout } = useAuth();
@@ -241,6 +244,17 @@ export default function Home() {
               </CardContent>
             </Card>
           </Link>
+        </div>
+
+        {/* Agent Control Panel */}
+        <AgentControlPanel />
+
+        <div className="grid lg:grid-cols-2 gap-8 my-8">
+          {/* Live Metrics */}
+          <LiveMetricsPanel />
+
+          {/* Trade Execution Log */}
+          <TradeExecutionLog />
         </div>
 
         {/* Overview Cards */}
