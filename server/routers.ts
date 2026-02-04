@@ -12,6 +12,7 @@ import { dashboardRouter } from "./routers/dashboardRouter";
 import { exchangeRouter } from "./routers/exchangeRouter";
 import { llmTradingRouter } from "./routers/llmTradingRouter";
 import { tradingControlRouter } from "./routers/tradingControlRouter";
+import { autonomousAgentSelectorRouter } from "./routers/autonomousAgentSelectorRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -38,6 +39,7 @@ export const appRouter = router({
   exchange: exchangeRouter,
   llmTrading: llmTradingRouter,
   tradingControl: tradingControlRouter,
+  autonomousAgentSelector: autonomousAgentSelectorRouter,
 });
 
 export type AppRouter = typeof appRouter;

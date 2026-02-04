@@ -14,6 +14,7 @@ import AutonomousAgentSelector from "./pages/AutonomousAgentSelector";
 import ExchangeSettings from "./pages/ExchangeSettings";
 import AITradingAnalysis from "./pages/AITradingAnalysis";
 import CryptoPairs from "./pages/CryptoPairs";
+import EnhancedAutonomousAgentSelector from "./pages/EnhancedAutonomousAgentSelector";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -30,6 +31,7 @@ function Router() {
       <Route path={"/autonomous-agent"} component={AutonomousAgentSelector} />
       <Route path={"/trading-simulation"} component={TradingSimulation} />
       <Route path={"/crypto-pairs"} component={CryptoPairs} />
+      <Route path={"/agent-selector-enhanced"} component={EnhancedAutonomousAgentSelector} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
