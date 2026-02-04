@@ -9,6 +9,7 @@ import { trpc } from "@/lib/trpc";
 import { AgentControlPanel } from "@/components/AgentControlPanel";
 import { LiveMetricsPanel } from "@/components/LiveMetricsPanel";
 import { TradeExecutionLog } from "@/components/TradeExecutionLog";
+import TradingControlPanel from "@/components/TradingControlPanel";
 
 export default function Home() {
   const { user, loading, isAuthenticated, logout } = useAuth();
@@ -244,6 +245,11 @@ export default function Home() {
               </CardContent>
             </Card>
           </Link>
+        </div>
+
+        {/* Trading Control Panel */}
+        <div className="mb-8">
+          <TradingControlPanel />
         </div>
 
         {/* Agent Control Panel */}

@@ -238,3 +238,16 @@
 - [x] Add comprehensive agent monitoring (AgentMonitoring service)
 - [x] Test all improvements (TypeScript compilation verified)
 - [x] Document agent architecture
+
+
+## NEW SESSION - Trading Control UI (Start/Stop Buttons) - COMPLETE ✅
+- [x] Create trading control tRPC router with start/stop endpoints
+- [x] Implement trading state management via agent configs
+- [x] Build Start/Stop trading button component
+- [x] Add trading status display (Active/Inactive with indicator)
+- [x] Implement real-time status updates with refetch
+- [x] Add confirmation dialogs for start/stop actions
+- [x] Add error handling and user feedback (toast notifications)
+- [x] Integrate with agent control system
+- [x] Display trading statistics (profit, win rate, active agents)
+- [x] Add refresh button for manual updates
