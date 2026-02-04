@@ -12,6 +12,7 @@ import AutoAgent from "./pages/AutoAgent";
 import TradingSimulation from "./pages/TradingSimulation";
 import AutonomousAgentSelector from "./pages/AutonomousAgentSelector";
 import ExchangeSettings from "./pages/ExchangeSettings";
+import AITradingAnalysis from "./pages/AITradingAnalysis";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -23,6 +24,7 @@ function Router() {
       <Route path={"/agents"} component={AgentDashboard} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/exchange-settings"} component={ExchangeSettings} />
+      <Route path={"/ai-trading"} component={AITradingAnalysis} />
       <Route path={"/auto-agent"} component={AutoAgent} />
       <Route path={"/autonomous-agent"} component={AutonomousAgentSelector} />
       <Route path={"/trading-simulation"} component={TradingSimulation} />
