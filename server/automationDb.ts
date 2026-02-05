@@ -195,7 +195,7 @@ export async function startAgentExecution(execution: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const { agentExecutions } = await import("../drizzle/schema");
+  const { agentExecutions, agentConfigs } = await import("../drizzle/schema");
   
   // Update agent status to enabled
   await db
@@ -213,32 +213,23 @@ export async function startAgentExecution(execution: {
   });
 }
 
-export async function stopAgentExecution(executionId: number) {
+export async function stopAgentExecution(agentId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const { agentExecutions } = await import("../drizzle/schema");
+  const { agentExecutions, agentConfigs } = await import("../drizzle/schema");
   
-  // Get the execution record to find the agent
-  const execution = await db
-    .select()
-    .from(agentExecutions)
-    .where(eq(agentExecutions.id, executionId))
-    .limit(1);
+  // Update agent status to disabled
+  await db
+    .update(agentConfigs)
+    .set({ isEnabled: false, updatedAt: new Date() })
+    .where(eq(agentConfigs.id, agentId));
   
-  if (execution.length > 0) {
-    // Update agent status to disabled
-    await db
-      .update(agentConfigs)
-      .set({ isEnabled: false, updatedAt: new Date() })
-      .where(eq(agentConfigs.id, execution[0].agentId));
-  }
-  
-  // Update execution record
+  // Update execution record - stop the most recent running execution
   return await db
     .update(agentExecutions)
     .set({ status: "stopped", endTime: new Date() })
-    .where(eq(agentExecutions.id, executionId));
+    .where(eq(agentExecutions.agentId, agentId));
 }
 
 export async function getAgentExecutions(userId: number) {
