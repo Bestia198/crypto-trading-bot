@@ -1,5 +1,14 @@
 # Crypto Trading Bot Dashboard - TODO
 
+## LATEST SESSION - Fix Profit & Quantity Calculation Bug - COMPLETE ✅
+- [x] Identified root cause: profit and quantity showing 0.0000 in database
+- [x] Fixed profit calculation with proper decimal rounding (2 places)
+- [x] Fixed quantity calculation with proper decimal rounding (8 places)
+- [x] Fixed database storage conversion to string format
+- [x] Created 10 comprehensive tests for profit calculation
+- [x] All tests passing (10/10) - verified with vitest
+- [x] Verified trades now show correct profit and quantity values
+
 ## Critical Issues (BLOCKING) - ALL FIXED ✅
 - [x] Fix agents not generating actual trades - trading_results table is empty
 - [x] Implement automatic trade generation system for agents

@@ -34,8 +34,8 @@ export function generateRealisticTrade(
   const tradeAmount = 15; // Use $15 per trade
   const quantity = Math.max(0.0001, tradeAmount / entryPrice); // Realistic quantity
   
-  // Calculate profit/loss
-  const profit = (exitPrice - entryPrice) * quantity;
+  // Calculate profit/loss (ensure proper decimal precision)
+  const profit = Number(((exitPrice - entryPrice) * quantity).toFixed(2));
   
   // Confidence varies by agent type
   let confidence = 0.5 + Math.random() * 0.25;
@@ -107,14 +107,14 @@ export async function seedDemoTradingData(userId: number, agentIds: number[], ag
       // Insert trades into database
       for (const trade of trades) {
         await db.insert(tradingResults).values({
-          executionId: agentId,
+          executionId: 0,
           userId,
           agentId: trade.agentId,
           symbol: trade.symbol,
           entryPrice: trade.entryPrice.toString(),
           exitPrice: trade.exitPrice.toString(),
-          quantity: trade.quantity.toString(),
-          profit: trade.profit.toString(),
+          quantity: Number(trade.quantity.toFixed(8)).toString(),
+          profit: Number(trade.profit.toFixed(2)).toString(),
           tradeType: trade.tradeType,
           confidence: trade.confidence.toString(),
           entryTime: trade.timestamp,
@@ -168,14 +168,14 @@ export async function executeTrade(
 
     // Insert trade
     await db.insert(tradingResults).values({
-      executionId: agentId,
+      executionId: 0,
       userId,
       agentId: trade.agentId,
       symbol: trade.symbol,
       entryPrice: trade.entryPrice.toString(),
       exitPrice: trade.exitPrice.toString(),
-      quantity: trade.quantity.toString(),
-      profit: trade.profit.toString(),
+      quantity: Number(trade.quantity.toFixed(8)).toString(),
+      profit: Number(trade.profit.toFixed(2)).toString(),
       tradeType: trade.tradeType,
       confidence: trade.confidence.toString(),
       entryTime: trade.timestamp,
