@@ -1,0 +1,45 @@
+{
+  "query": "SELECT ac.id, ac.user_id, ac.agent_name, ac.agent_type, u.name FROM agent_configs ac JOIN users u ON ac.user_id = u.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT ac.id, ac.user_id, ac.agent_name, ac.agent_type, u.name FROM agent_configs ac JOIN users u ON ac.user_id = u.id;",
+  "rows": [
+    {
+      "id": "30001",
+      "user_id": "120003",
+      "agent_name": "Rl",
+      "agent_type": "RL",
+      "name": "Radoslaw Kulczyk"
+    },
+    {
+      "id": "30002",
+      "user_id": "120003",
+      "agent_name": "Impet",
+      "agent_type": "Momentum",
+      "name": "Radoslaw Kulczyk"
+    },
+    {
+      "id": "60001",
+      "user_id": "120003",
+      "agent_name": "Ds",
+      "agent_type": "DeepSeek",
+      "name": "Radoslaw Kulczyk"
+    },
+    {
+      "id": "60002",
+      "user_id": "120003",
+      "agent_name": "Pr",
+      "agent_type": "MeanReversion",
+      "name": "Radoslaw Kulczyk"
+    },
+    {
+      "id": "90001",
+      "user_id": "120003",
+      "agent_name": "Agres",
+      "agent_type": "Momentum",
+      "name": "Radoslaw Kulczyk"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuser_id\tagent_name\tagent_type\tname\n30001\t120003\tRl\tRL\tRadoslaw Kulczyk\n30002\t120003\tImpet\tMomentum\tRadoslaw Kulczyk\n60001\t120003\tDs\tDeepSeek\tRadoslaw Kulczyk\n60002\t120003\tPr\tMeanReversion\tRadoslaw Kulczyk\n90001\t120003\tAgres\tMomentum\tRadoslaw Kulczyk\n",
+  "stderr": "",
+  "execution_time_ms": 345
+}

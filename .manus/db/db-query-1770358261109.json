@@ -1,0 +1,16 @@
+{
+  "query": "SELECT u.id, u.name, u.openId, COUNT(ac.id) as agent_count FROM users u LEFT JOIN agent_configs ac ON u.id = ac.user_id WHERE u.name LIKE '%RADOSŁAW%' OR u.name LIKE '%B3STIA%' GROUP BY u.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT u.id, u.name, u.openId, COUNT(ac.id) as agent_count FROM users u LEFT JOIN agent_configs ac ON u.id = ac.user_id WHERE u.name LIKE '%RADOSŁAW%' OR u.name LIKE '%B3STIA%' GROUP BY u.id;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "RADOSŁAW (B3STIA1978 OFFICIAL)",
+      "openId": "bpqrHdxVJ6YfJ4xdNmKH6r",
+      "agent_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\topenId\tagent_count\n1\tRADOSŁAW (B3STIA1978 OFFICIAL)\tbpqrHdxVJ6YfJ4xdNmKH6r\t0\n",
+  "stderr": "",
+  "execution_time_ms": 346
+}

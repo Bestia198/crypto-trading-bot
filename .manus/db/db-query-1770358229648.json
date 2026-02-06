@@ -1,0 +1,70 @@
+{
+  "query": "SELECT * FROM agent_configs LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user AZZAHwzL8CcpFVy.root --database Pbyi2wUKSGy94X9zGceg7e --execute SELECT * FROM agent_configs LIMIT 10;",
+  "rows": [
+    {
+      "id": "30001",
+      "user_id": "120003",
+      "agent_type": "RL",
+      "agent_name": "Rl",
+      "is_enabled": "1",
+      "learning_rate": "0.0010",
+      "stop_loss_pct": "0.0500",
+      "take_profit_pct": "0.1000",
+      "created_at": "2025-11-09 23:18:52",
+      "updated_at": "2026-02-06 06:06:58"
+    },
+    {
+      "id": "30002",
+      "user_id": "120003",
+      "agent_type": "Momentum",
+      "agent_name": "Impet",
+      "is_enabled": "1",
+      "learning_rate": "0.0010",
+      "stop_loss_pct": "0.0500",
+      "take_profit_pct": "0.1000",
+      "created_at": "2025-11-09 23:19:40",
+      "updated_at": "2026-02-05 14:51:41"
+    },
+    {
+      "id": "60001",
+      "user_id": "120003",
+      "agent_type": "DeepSeek",
+      "agent_name": "Ds",
+      "is_enabled": "1",
+      "learning_rate": "0.0010",
+      "stop_loss_pct": "0.0500",
+      "take_profit_pct": "0.1000",
+      "created_at": "2025-11-09 23:26:54",
+      "updated_at": "2026-02-05 14:51:42"
+    },
+    {
+      "id": "60002",
+      "user_id": "120003",
+      "agent_type": "MeanReversion",
+      "agent_name": "Pr",
+      "is_enabled": "1",
+      "learning_rate": "0.0010",
+      "stop_loss_pct": "0.0500",
+      "take_profit_pct": "0.1000",
+      "created_at": "2025-11-09 23:29:35",
+      "updated_at": "2026-02-05 14:51:42"
+    },
+    {
+      "id": "90001",
+      "user_id": "120003",
+      "agent_type": "Momentum",
+      "agent_name": "Agres",
+      "is_enabled": "1",
+      "learning_rate": "0.0010",
+      "stop_loss_pct": "0.0500",
+      "take_profit_pct": "0.1000",
+      "created_at": "2025-11-25 23:28:18",
+      "updated_at": "2026-02-05 14:51:10"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuser_id\tagent_type\tagent_name\tis_enabled\tlearning_rate\tstop_loss_pct\ttake_profit_pct\tcreated_at\tupdated_at\n30001\t120003\tRL\tRl\t1\t0.0010\t0.0500\t0.1000\t2025-11-09 23:18:52\t2026-02-06 06:06:58\n30002\t120003\tMomentum\tImpet\t1\t0.0010\t0.0500\t0.1000\t2025-11-09 23:19:40\t2026-02-05 14:51:41\n60001\t120003\tDeepSeek\tDs\t1\t0.0010\t0.0500\t0.1000\t2025-11-09 23:26:54\t2026-02-05 14:51:42\n60002\t120003\tMeanReversion\tPr\t1\t0.0010\t0.0500\t0.1000\t2025-11-09 23:29:35\t2026-02-05 14:51:42\n90001\t120003\tMomentum\tAgres\t1\t0.0010\t0.0500\t0.1000\t2025-11-25 23:28:18\t2026-02-05 14:51:10\n",
+  "stderr": "",
+  "execution_time_ms": 1169
+}
