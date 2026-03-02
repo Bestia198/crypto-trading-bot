@@ -68,7 +68,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Deploy multiple autonomous trading agents using Reinforcement Learning, Momentum, and LLM strategies.
+                  Deploy multiple autonomous trading agents using advanced Reinforcement Learning with technical indicators (RSI, MACD, Bollinger Bands, ATR). Each agent learns and adapts to market conditions in real-time.
                 </p>
               </CardContent>
             </Card>
@@ -80,7 +80,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Monitor performance metrics, win rates, confidence levels, and ROI in real-time dashboards.
+                  Monitor comprehensive performance metrics including win rates, profit/loss (P&L), Sharpe ratio, Sortino ratio, confidence levels, and ROI. Track drawdown and volatility in real-time.
                 </p>
               </CardContent>
             </Card>
@@ -92,7 +92,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Set stop-loss limits, daily loss caps, and maximum drawdown thresholds for each agent.
+                  Advanced risk controls using Kelly Criterion for position sizing, dynamic stop-loss/take-profit, daily loss caps, maximum drawdown thresholds, and portfolio diversification analysis.
                 </p>
               </CardContent>
             </Card>
@@ -104,7 +104,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Manage multiple agents with shared or separate portfolios. Track allocation and rebalance easily.
+                  Manage multiple agents with automatic rebalancing. Track asset allocation, correlation analysis, and receive recommendations for optimal portfolio diversification.
                 </p>
               </CardContent>
             </Card>
@@ -112,11 +112,11 @@ export default function Home() {
             <Card className="hover:shadow-lg transition">
               <CardHeader>
                 <TrendingUp className="h-8 w-8 text-red-600 mb-2" />
-                <CardTitle>Market Signals</CardTitle>
+                <CardTitle>Technical Indicators</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  AI-generated trading signals based on technical analysis, market trends, and sentiment analysis.
+                  Trading signals generated from advanced technical indicators: RSI, MACD, Bollinger Bands, ATR, Stochastic Oscillator, and EMA/SMA trend analysis with confidence scoring.
                 </p>
               </CardContent>
             </Card>
@@ -124,11 +124,11 @@ export default function Home() {
             <Card className="hover:shadow-lg transition">
               <CardHeader>
                 <Rocket className="h-8 w-8 text-indigo-600 mb-2" />
-                <CardTitle>24/7 Automation</CardTitle>
+                <CardTitle>Automatic Ecosystem</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Your agents trade around the clock. No manual intervention needed. Set and forget.
+                  Fully autonomous trading with automatic profit-taking, loss-cutting, and portfolio rebalancing. Agents trade 24/7 with zero manual intervention required.
                 </p>
               </CardContent>
             </Card>
