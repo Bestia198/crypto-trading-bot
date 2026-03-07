@@ -1,0 +1,65 @@
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import NotFound from "@/pages/NotFound";
+import { Route, Switch } from "wouter";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Home from "./pages/Home";
+import Automation from "./pages/Automation";
+import AgentDashboard from "./pages/AgentDashboard";
+import Settings from "./pages/Settings";
+import AutoAgent from "./pages/AutoAgent";
+import TradingSimulation from "./pages/TradingSimulation";
+import AutonomousAgentSelector from "./pages/AutonomousAgentSelector";
+import ExchangeSettings from "./pages/ExchangeSettings";
+import AITradingAnalysis from "./pages/AITradingAnalysis";
+import CryptoPairs from "./pages/CryptoPairs";
+import EnhancedAutonomousAgentSelector from "./pages/EnhancedAutonomousAgentSelector";
+import PaperTrading from "./pages/PaperTrading";
+
+function Router() {
+  // make sure to consider if you need authentication for certain routes
+  return (
+    <Switch>
+      <Route path={"/"} component={Home} />
+      <Route path={"/dashboard"} component={Automation} />
+      <Route path={"/automation"} component={Automation} />
+      <Route path={"/agents"} component={AgentDashboard} />
+      <Route path={"/settings"} component={Settings} />
+      <Route path={"/exchange-settings"} component={ExchangeSettings} />
+      <Route path={"/ai-trading"} component={AITradingAnalysis} />
+      <Route path={"/auto-agent"} component={AutoAgent} />
+      <Route path={"/autonomous-agent"} component={AutonomousAgentSelector} />
+      <Route path={"/trading-simulation"} component={TradingSimulation} />
+      <Route path={"/crypto-pairs"} component={CryptoPairs} />
+      <Route path={"/agent-selector-enhanced"} component={EnhancedAutonomousAgentSelector} />
+      <Route path={"/paper-trading"} component={PaperTrading} />
+      <Route path={"/404"} component={NotFound} />
+      {/* Final fallback route */}
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+// NOTE: About Theme
+// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
+//   to keep consistent foreground/background color across components
+// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <ThemeProvider
+        defaultTheme="light"
+        // switchable
+      >
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
+  );
+}
+
+export default App;
